@@ -42,6 +42,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
+    console.log('deploy')
     const user = await this.usersService.findByEmail(dto.email);
 
     if (!user) {
