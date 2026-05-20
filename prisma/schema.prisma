@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+}
+
+enum ServiceType {
+  LUNCH
+  SNACK
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(OPERATOR)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accessLogs AccessLog[]
+}
+
+model Student {
+  id         String   @id @default(uuid())
+  qrCode     String   @unique
+
+  firstName  String
+  lastName   String
+
+  document   String   @unique
+  grade      String?
+
+  photoUrl   String?
+
+  isActive   Boolean  @default(true)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  accessLogs AccessLog[]
+}
+
+model AccessLog {
+  id          String      @id @default(uuid())
+
+  studentId   String
+  operatorId  String?
+
+  serviceType ServiceType
+
+  createdAt   DateTime @default(now())
+
+  student  Student @relation(fields: [studentId], references: [id])
+  operator User?   @relation(fields: [operatorId], references: [id])
+}
